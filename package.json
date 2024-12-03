@@ -1,0 +1,17 @@
+{
+  "name": "indoor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev index.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "puppeteer": "^23.9.0"
+  }
+}
