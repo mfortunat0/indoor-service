@@ -1,14 +1,9 @@
-import liveServer from "live-server";
 import express from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
-
-const configLiveServer = {
-  port: 5500,
-  file: "index.html",
-};
+import puppeteer from "puppeteer";
 
 const ciStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,5 +43,27 @@ app.get("/listFilesCi", (req, res) => {
   });
 });
 
-liveServer.start(configLiveServer);
-app.listen(5501, () => console.log("File server running"));
+(async () => {
+  const browser = await puppeteer.launch({
+    headless: false,
+    timeout: 0,
+    ignoreDefaultArgs: ["--enable-automation"],
+    args: [
+      "--kiosk",
+      "--app",
+      "--disable-infobars",
+      "--silent",
+      "--disable-gpu",
+      "--disable-extensions",
+      "--disable-dev-shm-usage",
+      "--disable-setuid-sandbox",
+      "--start-fullscreen",
+    ],
+    defaultViewport: null,
+    protocolTimeout: 120000,
+  });
+  const page = await browser.newPage();
+  await page.goto(`file://${path.join(__dirname, "index.html")}`);
+})();
+
+app.listen(5500, () => console.log("File server running"));
