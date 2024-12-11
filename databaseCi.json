@@ -1,0 +1,87 @@
+[
+  {
+    "type": "video",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/videos/9-f.mp4"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/8.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/1.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/2.gif"
+  },
+  {
+    "type": "video",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/videos/11.mp4"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/7.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/3.gif"
+  },
+  {
+    "type": "video",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/videos/12.mp4"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/8.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/4.gif"
+  },
+  {
+    "type": "video",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/videos/13.mp4"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/7.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/5.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/8.gif"
+  },
+  {
+    "type": "video",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/videos/14.mp4"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/6.gif"
+  },
+  {
+    "type": "image",
+    "time": 10000,
+    "url": "http://192.168.100.51:5500/assets/ci/images/7.gif"
+  }
+]

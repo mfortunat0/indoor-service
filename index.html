@@ -3,22 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Player</title>
+    <title>Midia Indoor Front</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+      }
+
+      html,
+      body {
         background-color: #000;
         overflow: hidden;
       }
-      video {
+
+      #root {
         width: 100vw;
         height: 100vh;
+        min-width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      img,
+      video,
+      iframe {
+        transform: rotate(90deg);
+        width: 100vh;
+        max-width: 100vh;
+        height: 100vw;
+        max-height: 100vw;
+        object-fit: contain;
       }
     </style>
   </head>
   <body>
-    <video src="./background.mp4" autoplay loop muted></video>
+    <div id="root">
+      <video src="./assets/vertical.mp4" muted autoplay loop />
+    </div>
   </body>
 </html>
