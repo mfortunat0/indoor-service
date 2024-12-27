@@ -75,9 +75,19 @@ fileRouter.delete("/", (req, res) => {
 
 fileRouter.get("/list/:client", (req, res) => {
   const { client } = req.params;
-  res.json({
-    medias: fs.readdirSync(path.join(__dirname, "..", "..", "assets", client)),
-  });
+
+  if (fs.existsSync(path.join(__dirname, "..", "..", "assets", client))) {
+    const files = fs.readdirSync(
+      path.join(__dirname, "..", "..", "assets", client)
+    );
+
+    res.json({
+      medias: files.filter((fileName) => fileName !== "final.mp4"),
+    });
+    return;
+  } else {
+    res.status(404).send();
+  }
 });
 
 fileRouter.get("/stats/:client", (req, res) => {
