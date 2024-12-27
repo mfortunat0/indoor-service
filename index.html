@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="favico.ico" type="image/png" />
     <title>Midia Indoor Front</title>
     <style>
       * {
@@ -41,7 +42,32 @@
   </head>
   <body>
     <div id="root">
-      <video src="./assets/vertical.mp4" muted autoplay loop />
+      <video src="" muted autoplay loop />
     </div>
+    <script>
+      try {
+        const client = window.location.search.replace("?", "").split("=")[1];
+        const videoElement = document.querySelector("video");
+        videoElement.src = `http://localhost:2809/${client}/final.mp4`;
+
+        let lastTime = 0;
+        setInterval(() => {
+          fetch(`http://localhost:2809/file/stats/${client}`).then(
+            (response) => {
+              response.json().then((data) => {
+                if (lastTime === 0) {
+                  lastTime = data.lastTime;
+                } else if (lastTime !== data.lastTime) {
+                  lastTime = data.lastTime;
+                  location.reload();
+                }
+              });
+            }
+          );
+        }, 1000 * 10);
+      } catch (error) {
+        console.error(error);
+      }
+    </script>
   </body>
 </html>

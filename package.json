@@ -4,19 +4,30 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev index.ts"
+    "dev": "ts-node-dev src/index.ts",
+    "start": "tsc && node src/index.js",
+    "build": "tsc"
   },
   "dependencies": {
+    "@prisma/client": "6.1.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
-    "multer": "^1.4.5-lts.1",
-    "puppeteer": "^23.10.3"
+    "helmet": "^8.0.0",
+    "live-server": "^1.2.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/live-server": "^1.2.3",
+    "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.1",
+    "prisma": "^6.1.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2"
   }
