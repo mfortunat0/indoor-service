@@ -46,11 +46,22 @@
     </style>
   </head>
   <body>
-    <div id="root">
-      <video src="" muted autoplay loop />
-    </div>
+    <div id="root"></div>
     <script>
       try {
+        const ipServer = "192.168.100.146:2809";
+        const root = document.querySelector("#root");
+        const videoElement = document.createElement("video");
+        videoElement.preload = "auto";
+        videoElement.muted = true;
+        videoElement.loop = true;
+        videoElement.playsinline = true;
+        videoElement.disablePictureInPicture = true;
+        videoElement.disableRemotePlayback = true;
+        videoElement.autoplay = true;
+
+        root.appendChild(videoElement);
+
         const client = window.location.search
           .replace("?", "")
           .split("&")[0]
@@ -60,8 +71,6 @@
           .replace("?", "")
           .split("&")[1]
           .split("=")[1];
-
-        const videoElement = document.querySelector("video");
 
         if (orientation === "vertical") {
           videoElement.style.transform = "rotate(0deg)";
@@ -75,13 +84,18 @@
 
         let lastTime = 0;
         setInterval(() => {
-          fetch(`http://192.168.100.146:2809/file/stats/${client}`)
+          fetch(`http://${ipServer}/file/stats/${client}`)
             .then((response) => {
               response.json().then((data) => {
-                // console.log(lastTime, data.lastTime);
                 if (lastTime === 0) {
                   lastTime = data.lastTime;
-                  videoElement.src = `http://192.168.100.146:2809/${client}/final.mp4?v=${lastTime}`;
+                  videoElement.src = `http://${ipServer}/${client}/final.mp4?v=${lastTime}`;
+                  videoElement.onerror = () => {
+                    alert("Error");
+                    setTimeout(() => {
+                      location.reload(true);
+                    }, 3000);
+                  };
                 } else if (lastTime !== data.lastTime) {
                   window.location.reload(true);
                 }

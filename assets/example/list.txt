@@ -1,2 +1,3 @@
-file 'horizontal.mp4' 
-file 'vertical.mp4' 
+file 'vertical2.mp4' 
+file 'vertical3.mp4' 
+file 'vertical5.mp4' 

@@ -7,7 +7,6 @@ import { exec } from "child_process";
 const ciStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const client = req.body.client;
-    const type = file.mimetype.split("/")[0];
     const pathFolder = path.join(__dirname, "..", "..", "assets", client);
 
     if (!fs.existsSync(pathFolder)) {
@@ -25,6 +24,34 @@ const uploadCi = multer({ storage: ciStorage });
 const fileRouter = Router();
 
 fileRouter.post("/", uploadCi.single("file"), (req, res) => {
+  if (req.file) {
+    const extension = req.file.originalname.substring(
+      req.file.originalname.lastIndexOf(".")
+    );
+
+    if (extension.toLocaleLowerCase() === ".mov") {
+      exec(
+        `ffmpeg -i ${req.file.path} -vcodec h264 -acodec aac ${path.join(
+          __dirname,
+          "..",
+          "..",
+          "assets",
+          "example",
+          req.file.originalname.replace(extension, "") + ".mp4"
+        )}`,
+        (error) => {
+          if (error) {
+            console.log(error);
+          }
+
+          if (req.file) {
+            fs.unlinkSync(req.file.path);
+          }
+        }
+      );
+    }
+  }
+
   res.send();
 });
 
