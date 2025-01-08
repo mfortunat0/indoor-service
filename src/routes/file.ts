@@ -1,8 +1,9 @@
 import { Router } from "express";
+import { exec } from "child_process";
+import { v4 as uuid } from "uuid";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { exec } from "child_process";
 
 const ciStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -16,7 +17,9 @@ const ciStorage = multer.diskStorage({
     cb(null, pathFolder);
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const name = uuid();
+    file.originalname = name;
+    cb(null, name);
   },
 });
 
@@ -26,10 +29,7 @@ const fileRouter = Router();
 fileRouter.post("/", uploadCi.single("file"), (req, res) => {
   try {
     if (req.file) {
-      const extension = req.file.originalname.substring(
-        req.file.originalname.lastIndexOf(".")
-      );
-
+      console.log(req.file);
       exec(
         `ffmpeg -i ${req.file.path} -vcodec h264 -acodec aac ${path.join(
           __dirname,
@@ -37,7 +37,7 @@ fileRouter.post("/", uploadCi.single("file"), (req, res) => {
           "..",
           "assets",
           "example",
-          req.file.originalname.replace(extension, "") + ".mp4"
+          req.file.originalname + ".mp4"
         )}`,
         (error) => {
           if (error) {
