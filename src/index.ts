@@ -1,5 +1,10 @@
 import "dotenv/config";
-import express from "express";
+import express, {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
@@ -38,5 +43,16 @@ app.get("/health", (req, res) => {
 
 app.use("/user", userRouter);
 app.use("/file", fileRouter);
+app.use(
+  (
+    err: ErrorRequestHandler,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    console.error(err);
+    res.status(500).send("Something broke!");
+  }
+);
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT} 📡`));

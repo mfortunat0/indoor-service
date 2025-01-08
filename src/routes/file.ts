@@ -24,12 +24,12 @@ const uploadCi = multer({ storage: ciStorage });
 const fileRouter = Router();
 
 fileRouter.post("/", uploadCi.single("file"), (req, res) => {
-  if (req.file) {
-    const extension = req.file.originalname.substring(
-      req.file.originalname.lastIndexOf(".")
-    );
+  try {
+    if (req.file) {
+      const extension = req.file.originalname.substring(
+        req.file.originalname.lastIndexOf(".")
+      );
 
-    if (extension.toLocaleLowerCase() === ".mov") {
       exec(
         `ffmpeg -i ${req.file.path} -vcodec h264 -acodec aac ${path.join(
           __dirname,
@@ -47,12 +47,13 @@ fileRouter.post("/", uploadCi.single("file"), (req, res) => {
           if (req.file) {
             fs.unlinkSync(req.file.path);
           }
+          res.send();
         }
       );
     }
+  } catch (error) {
+    res.status(500).send();
   }
-
-  res.send();
 });
 
 fileRouter.post("/generate", (req, res) => {
