@@ -29,9 +29,10 @@ const fileRouter = Router();
 fileRouter.post("/", uploadCi.single("file"), (req, res) => {
   try {
     if (req.file) {
-      console.log(req.file);
       exec(
-        `ffmpeg -i ${req.file.path} -vcodec h264 -acodec aac ${path.join(
+        `ffmpeg -i ${
+          req.file.path
+        } -vcodec libx264 -preset medium -an ${path.join(
           __dirname,
           "..",
           "..",
@@ -57,79 +58,97 @@ fileRouter.post("/", uploadCi.single("file"), (req, res) => {
 });
 
 fileRouter.post("/generate", (req, res) => {
-  const { client } = req.body;
+  try {
+    const { client } = req.body;
 
-  const fileNames: string[] = req.body.fileNames;
-  const folderPath = path.join(__dirname, "..", "..", "assets", client);
-  let list = "";
+    const fileNames: string[] = req.body.fileNames;
+    const folderPath = path.join(__dirname, "..", "..", "assets", client);
+    let list = "";
 
-  for (const name of fileNames) {
-    const exists = fs.existsSync(path.join(folderPath, name));
-    list += `file '${name}' \n`;
-    if (!exists) {
-      res.status(400).send();
-      return;
-    }
-  }
-
-  const filePath = path.join(folderPath, "final.mp4");
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
-
-  const listPath = path.join(folderPath, "list.txt");
-  if (fs.existsSync(listPath)) {
-    fs.unlinkSync(listPath);
-  }
-
-  fs.writeFileSync(listPath, list, "utf-8");
-
-  exec(
-    `ffmpeg -f concat -i ${listPath} -c copy ${filePath}`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.log(error);
+    for (const name of fileNames) {
+      const exists = fs.existsSync(path.join(folderPath, name));
+      list += `file '${name}' \n`;
+      if (!exists) {
+        res.status(400).send();
+        return;
       }
-      res.send();
     }
-  );
+
+    const filePath = path.join(folderPath, "final.mp4");
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    const listPath = path.join(folderPath, "list.txt");
+    if (fs.existsSync(listPath)) {
+      fs.unlinkSync(listPath);
+    }
+
+    fs.writeFileSync(listPath, list, "utf-8");
+
+    exec(
+      `ffmpeg -f concat -i ${listPath} -c copy ${filePath}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(error);
+        }
+        res.send();
+      }
+    );
+  } catch (error) {
+    res.status(500).send();
+    console.log(error);
+  }
 });
 
 fileRouter.delete("/", (req, res) => {
-  const { client, name } = req.body;
-  fs.unlinkSync(path.join(__dirname, "..", "..", "assets", client, name));
-  res.status(201).send();
+  try {
+    const { client, name } = req.body;
+    fs.unlinkSync(path.join(__dirname, "..", "..", "assets", client, name));
+    res.status(201).send();
+  } catch (error) {
+    res.status(500).send();
+  }
 });
 
 fileRouter.get("/list/:client", (req, res) => {
-  const { client } = req.params;
+  try {
+    const { client } = req.params;
 
-  if (fs.existsSync(path.join(__dirname, "..", "..", "assets", client))) {
-    const files = fs.readdirSync(
-      path.join(__dirname, "..", "..", "assets", client)
-    );
+    if (fs.existsSync(path.join(__dirname, "..", "..", "assets", client))) {
+      const files = fs.readdirSync(
+        path.join(__dirname, "..", "..", "assets", client)
+      );
 
-    res.json({
-      medias: files.filter((fileName) => fileName !== "final.mp4"),
-    });
-    return;
-  } else {
-    res.status(404).send();
+      res.json({
+        medias: files.filter((fileName) => fileName !== "final.mp4"),
+      });
+      return;
+    } else {
+      res.status(404).send();
+    }
+  } catch (error) {
+    res.status(500).send();
+    console.log(error);
   }
 });
 
 fileRouter.get("/stats/:client", (req, res) => {
-  const { client } = req.params;
-  const pathFile = path.join(
-    __dirname,
-    "..",
-    "..",
-    "assets",
-    client,
-    "final.mp4"
-  );
-  const status = fs.statSync(pathFile);
-  res.json({ lastTime: status.ctimeMs });
+  try {
+    const { client } = req.params;
+    const pathFile = path.join(
+      __dirname,
+      "..",
+      "..",
+      "assets",
+      client,
+      "final.mp4"
+    );
+    const status = fs.statSync(pathFile);
+    res.json({ lastTime: status.ctimeMs });
+  } catch (error) {
+    res.status(500).send();
+  }
 });
 
 export { fileRouter };
