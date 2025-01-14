@@ -32,7 +32,7 @@ fileRouter.post("/", uploadCi.single("file"), (req, res) => {
       exec(
         `ffmpeg -i ${
           req.file.path
-        } -vcodec libx264 -preset medium -an ${path.join(
+        } -vcodec libx264 -preset slow -an ${path.join(
           __dirname,
           "..",
           "..",
