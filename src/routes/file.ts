@@ -87,7 +87,7 @@ fileRouter.post("/generate", (req, res) => {
     fs.writeFileSync(listPath, list, "utf-8");
 
     exec(
-      `ffmpeg -f concat -i ${listPath} -c copy ${filePath}`,
+      `ffmpeg -f concat -i ${listPath} -vcodec libx264 -preset medium -c copy ${filePath}`,
       (error, stdout, stderr) => {
         if (error) {
           console.log(error);
