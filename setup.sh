@@ -1,5 +1,5 @@
 apt-get update && \
-apt-get full-uprgade -y && \
+apt-get full-upgrade -y && \
 apt-get install ffmpeg git && \
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash && \
 source ~/.bashrc && \
