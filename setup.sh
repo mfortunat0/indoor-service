@@ -6,6 +6,7 @@ source ~/.bashrc && \
 nvm install 22 && \
 npm i -g yarn pm2 && \
 sudo echo "export LOCAL_IP=$(ip addr show enp0s3 | grep 'inet ' | cut -d/ -f1 | sed "s/    inet //")" >> ~/.bashrc && \
+source ~/.bashrc && \
 git clone https://github.com/mfortunat0/indoor-service && \
 cd indoor-service && \ 
 OLD_IP=192.168.100.134 && \
