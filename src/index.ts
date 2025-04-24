@@ -37,7 +37,7 @@ app.use(morgan("combined", { stream: accessLogStream }));
 
 app.get("/health", (req, res) => {
   res.json({
-    status: "ok",
+    status: "running",
   });
 });
 
