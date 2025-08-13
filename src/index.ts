@@ -10,7 +10,6 @@ import path from "path";
 import fs from "fs";
 import morgan from "morgan";
 import helmet from "helmet";
-import { userRouter } from "./routes/user";
 import { fileRouter } from "./routes/file";
 
 const accessLogStream = fs.createWriteStream(
@@ -19,7 +18,8 @@ const accessLogStream = fs.createWriteStream(
 );
 
 const app = express();
-const htmlPath = path.join(__dirname, "..", "index.html");
+const htmlIndexPath = path.join(__dirname, "..", "index.html");
+const htmlUploadPath = path.join(__dirname, "..", "upload.html");
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
@@ -32,7 +32,8 @@ app.use(cors());
 // );
 app.use(express.json());
 app.use(express.static("assets"));
-app.use("/start", express.static(htmlPath));
+app.use("/start", express.static(htmlIndexPath));
+app.use("/upload", express.static(htmlUploadPath));
 app.use(morgan("combined", { stream: accessLogStream }));
 
 app.get("/health", (req, res) => {
@@ -41,7 +42,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/user", userRouter);
 app.use("/file", fileRouter);
 app.use(
   (

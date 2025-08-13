@@ -66,46 +66,42 @@
 
         root.appendChild(videoElement);
 
-        const client = window.location.search
-          .replace("?", "")
-          .split("&")[0]
-          .split("=")[1];
-
-        const orientation = window.location.search
-          .replace("?", "")
-          .split("&")[1]
-          .split("=")[1];
-
-        if (orientation === "vertical") {
-          videoElement.style.transform = "rotate(0deg)";
-          videoElement.style.width = "100vw";
-          videoElement.style.width = "100vw";
-          videoElement.style.maxWidth = "100vw";
-          videoElement.style.height = "100vh";
-          videoElement.style.maxHeight = "100vh";
-          videoElement.style.objectFit = "contain";
-        }
+        videoElement.style.transform = "rotate(0deg)";
+        videoElement.style.width = "100vw";
+        videoElement.style.width = "100vw";
+        videoElement.style.maxWidth = "100vw";
+        videoElement.style.height = "100vh";
+        videoElement.style.maxHeight = "100vh";
+        videoElement.style.objectFit = "contain";
 
         let lastTime = 0;
         setInterval(() => {
-          fetch(`http://${ipServer}/file/stats/${client}`)
+          fetch(`http://${ipServer}/file/stats`)
             .then((response) => {
-              response.json().then((data) => {
-                if (lastTime === 0) {
-                  lastTime = data.lastTime;
-                  videoElement.src = `http://${ipServer}/${client}/final.mp4?v=${lastTime}`;
-                  videoElement.onerror = () => {
-                    alert("Error");
-                    setTimeout(() => {
-                      location.reload(true);
-                    }, 3000);
-                  };
-                } else if (lastTime !== data.lastTime) {
-                  window.location.reload(true);
-                }
-              });
+              response
+                .json()
+                .then((data) => {
+                  if (lastTime === 0) {
+                    lastTime = data.lastTime;
+                    videoElement.src = `http://${ipServer}/final.mp4?v=${lastTime}`;
+                    videoElement.onerror = () => {
+                      alert("Error");
+                      setTimeout(() => {
+                        location.reload(true);
+                      }, 3000);
+                    };
+                  } else if (lastTime !== data.lastTime) {
+                    window.location.reload(true);
+                  }
+                })
+                .catch((error) => {
+                  console.log("###### ERROR RESPONSE #########");
+                  console.log(error);
+                  location.reload();
+                });
             })
             .catch((error) => {
+              console.log("###### ERROR HTTP #########");
               console.log(error);
               location.reload();
             });

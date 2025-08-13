@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload de Vídeo Totem</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .upload-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+      }
+
+      h1 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 24px;
+      }
+
+      hr {
+        background-color: transparent;
+        color: transparent;
+        margin: 16px 0px;
+      }
+
+      .upload-area {
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        padding: 40px 20px;
+        margin: 20px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .upload-area:hover {
+        border-color: #3498db;
+        background-color: #f8fafc;
+      }
+
+      .upload-area.active {
+        border-color: #2ecc71;
+        background-color: #e8f5e9;
+      }
+
+      .upload-icon {
+        font-size: 48px;
+        color: #3498db;
+        margin-bottom: 15px;
+      }
+
+      .upload-text {
+        margin-bottom: 10px;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .btn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #2980b9;
+      }
+
+      .file-info {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #7f8c8d;
+      }
+
+      .formats-info {
+        font-size: 13px;
+        color: #95a5a6;
+        margin-top: 5px;
+      }
+
+      .preview-container {
+        margin-top: 20px;
+        display: none;
+      }
+
+      .preview-video {
+        width: 100%;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+
+      /* #selectBtn {
+        position: relative;
+        z-index: -999;
+      }
+
+      #selectBtn:hover {
+        background-color: #2ecc71;
+      } */
+    </style>
+    <style>
+      .toastify {
+        padding: 12px 20px;
+        color: #fff;
+        display: inline-block;
+        box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12),
+          0 10px 36px -4px rgba(77, 96, 232, 0.3);
+        background: -webkit-linear-gradient(315deg, #73a5ff, #5477f5);
+        background: linear-gradient(135deg, #73a5ff, #5477f5);
+        position: fixed;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+        border-radius: 2px;
+        cursor: pointer;
+        text-decoration: none;
+        max-width: calc(50% - 20px);
+        z-index: 2147483647;
+      }
+      .toastify.on {
+        opacity: 1;
+      }
+      .toast-close {
+        background: 0 0;
+        border: 0;
+        color: #fff;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 1em;
+        opacity: 0.4;
+        padding: 0 5px;
+      }
+      .toastify-right {
+        right: 15px;
+      }
+      .toastify-left {
+        left: 15px;
+      }
+      .toastify-top {
+        top: -150px;
+      }
+      .toastify-bottom {
+        bottom: -150px;
+      }
+      .toastify-rounded {
+        border-radius: 25px;
+      }
+      .toastify-avatar {
+        width: 1.5em;
+        height: 1.5em;
+        margin: -7px 5px;
+        border-radius: 2px;
+      }
+      .toastify-center {
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        max-width: fit-content;
+        max-width: -moz-fit-content;
+      }
+      @media only screen and (max-width: 360px) {
+        .toastify-left,
+        .toastify-right {
+          margin-left: auto;
+          margin-right: auto;
+          left: 0;
+          right: 0;
+          max-width: fit-content;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <form class="upload-container">
+      <h1>Upload de Vídeo</h1>
+
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">Arraste e solte seu vídeo aqui ou</div>
+        <button type="button" class="btn" id="selectBtn">
+          Selecionar Arquivo
+        </button>
+        <input
+          type="file"
+          id="fileInput"
+          class="file-input"
+          accept="video/mp4,video/ogg,video/webm"
+        />
+        <div class="formats-info">Formatos suportados: MP4, OGG, WEBM</div>
+      </div>
+
+      <div class="file-info" id="fileInfo">Nenhum arquivo selecionado</div>
+
+      <div class="preview-container" id="previewContainer">
+        <button type="submit" class="btn">Enviar</button>
+        <hr />
+        <div>Pré-visualização:</div>
+        <video
+          controls
+          inline
+          muted
+          class="preview-video"
+          id="previewVideo"
+        ></video>
+        <br />
+      </div>
+    </form>
+
+    <script>
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("fileInput");
+      const selectBtn = document.getElementById("selectBtn");
+      const fileInfo = document.getElementById("fileInfo");
+      const previewContainer = document.getElementById("previewContainer");
+      const previewVideo = document.getElementById("previewVideo");
+      const form = document.querySelector("form");
+      let fileUpdated;
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const url = window.location.href;
+        const ipServer = url.substring(7, url.lastIndexOf(":") + 5);
+
+        const formData = new FormData();
+
+        if (fileUpdated) {
+          formData.append("file", fileUpdated);
+
+          try {
+            const response = await fetch(`http://${ipServer}/file`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              Toastify({
+                text: `Erro HTTP: ${response.status}`,
+                duration: 3000,
+                position: "center",
+                style: {
+                  background: "#e74c3c",
+                },
+              }).showToast();
+
+              return;
+            }
+
+            Toastify({
+              text: "Alteração feita com sucesso",
+              duration: 3000,
+              position: "center",
+              style: {
+                background: "#2ecc71",
+              },
+            }).showToast();
+
+            setTimeout(() => location.reload(), 3010);
+          } catch (error) {
+            console.log(error);
+            Toastify({
+              text: "Algo deu errado",
+              duration: 3000,
+              position: "center",
+              style: {
+                background: "#e74c3c",
+              },
+            }).showToast();
+          }
+        }
+      });
+
+      selectBtn.addEventListener("click", () => fileInput.click());
+      uploadArea.addEventListener("click", () => fileInput.click());
+
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("active");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("active");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("active");
+
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          handleFileSelection();
+        }
+      });
+
+      fileInput.addEventListener("change", handleFileSelection);
+
+      function handleFileSelection() {
+        const file = fileInput.files[0];
+
+        if (file) {
+          const validTypes = ["video/mp4", "video/ogg", "video/webm"];
+
+          if (!validTypes.includes(file.type)) {
+            fileInfo.textContent =
+              "Formato não suportado. Use MP4, OGG ou WEBM.";
+            fileInfo.style.color = "#e74c3c";
+            previewContainer.style.display = "none";
+
+            Toastify({
+              text: "Formato não suportado. Use MP4, OGG ou WEBM.",
+              duration: 3000,
+              position: "center",
+              style: {
+                background: "#e74c3c",
+              },
+            }).showToast();
+
+            return;
+          }
+
+          fileUpdated = file;
+
+          fileInfo.textContent = `Arquivo selecionado: ${file.name} (${(
+            file.size /
+            (1024 * 1024)
+          ).toFixed(2)} MB)`;
+          fileInfo.style.color = "#2ecc71";
+
+          const videoURL = URL.createObjectURL(file);
+          previewVideo.src = videoURL;
+          previewContainer.style.display = "block";
+
+          Toastify({
+            text: "Video carregado, confira abaixo",
+            duration: 3000,
+            position: "center",
+            style: {
+              background: "#2ecc71",
+            },
+          }).showToast();
+        }
+      }
+    </script>
+    <script>
+      /**
+       * Minified by jsDelivr using Terser v5.37.0.
+       * Original file: /npm/toastify-js@1.12.0/src/toastify.js
+       *
+       * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+       */
+      /*!
+       * Toastify js 1.12.0
+       * https://github.com/apvarun/toastify-js
+       * @license MIT licensed
+       *
+       * Copyright (C) 2018 Varun A P
+       */
+      !(function (t, o) {
+        "object" == typeof module && module.exports
+          ? (module.exports = o())
+          : (t.Toastify = o());
+      })(this, function (t) {
+        var o = function (t) {
+          return new o.lib.init(t);
+        };
+        function i(t, o) {
+          return o.offset[t]
+            ? isNaN(o.offset[t])
+              ? o.offset[t]
+              : o.offset[t] + "px"
+            : "0px";
+        }
+        function s(t, o) {
+          return (
+            !(!t || "string" != typeof o) &&
+            !!(t.className && t.className.trim().split(/\s+/gi).indexOf(o) > -1)
+          );
+        }
+        return (
+          (o.defaults = {
+            oldestFirst: !0,
+            text: "Toastify is awesome!",
+            node: void 0,
+            duration: 3e3,
+            selector: void 0,
+            callback: function () {},
+            destination: void 0,
+            newWindow: !1,
+            close: !1,
+            gravity: "toastify-top",
+            positionLeft: !1,
+            position: "",
+            backgroundColor: "",
+            avatar: "",
+            className: "",
+            stopOnFocus: !0,
+            onClick: function () {},
+            offset: { x: 0, y: 0 },
+            escapeMarkup: !0,
+            ariaLive: "polite",
+            style: { background: "" },
+          }),
+          (o.lib = o.prototype =
+            {
+              toastify: "1.12.0",
+              constructor: o,
+              init: function (t) {
+                return (
+                  t || (t = {}),
+                  (this.options = {}),
+                  (this.toastElement = null),
+                  (this.options.text = t.text || o.defaults.text),
+                  (this.options.node = t.node || o.defaults.node),
+                  (this.options.duration =
+                    0 === t.duration ? 0 : t.duration || o.defaults.duration),
+                  (this.options.selector = t.selector || o.defaults.selector),
+                  (this.options.callback = t.callback || o.defaults.callback),
+                  (this.options.destination =
+                    t.destination || o.defaults.destination),
+                  (this.options.newWindow =
+                    t.newWindow || o.defaults.newWindow),
+                  (this.options.close = t.close || o.defaults.close),
+                  (this.options.gravity =
+                    "bottom" === t.gravity
+                      ? "toastify-bottom"
+                      : o.defaults.gravity),
+                  (this.options.positionLeft =
+                    t.positionLeft || o.defaults.positionLeft),
+                  (this.options.position = t.position || o.defaults.position),
+                  (this.options.backgroundColor =
+                    t.backgroundColor || o.defaults.backgroundColor),
+                  (this.options.avatar = t.avatar || o.defaults.avatar),
+                  (this.options.className =
+                    t.className || o.defaults.className),
+                  (this.options.stopOnFocus =
+                    void 0 === t.stopOnFocus
+                      ? o.defaults.stopOnFocus
+                      : t.stopOnFocus),
+                  (this.options.onClick = t.onClick || o.defaults.onClick),
+                  (this.options.offset = t.offset || o.defaults.offset),
+                  (this.options.escapeMarkup =
+                    void 0 !== t.escapeMarkup
+                      ? t.escapeMarkup
+                      : o.defaults.escapeMarkup),
+                  (this.options.ariaLive = t.ariaLive || o.defaults.ariaLive),
+                  (this.options.style = t.style || o.defaults.style),
+                  t.backgroundColor &&
+                    (this.options.style.background = t.backgroundColor),
+                  this
+                );
+              },
+              buildToast: function () {
+                if (!this.options) throw "Toastify is not initialized";
+                var t = document.createElement("div");
+                for (var o in ((t.className =
+                  "toastify on " + this.options.className),
+                this.options.position
+                  ? (t.className += " toastify-" + this.options.position)
+                  : !0 === this.options.positionLeft
+                  ? ((t.className += " toastify-left"),
+                    console.warn(
+                      "Property `positionLeft` will be depreciated in further versions. Please use `position` instead."
+                    ))
+                  : (t.className += " toastify-right"),
+                (t.className += " " + this.options.gravity),
+                this.options.backgroundColor &&
+                  console.warn(
+                    'DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.'
+                  ),
+                this.options.style))
+                  t.style[o] = this.options.style[o];
+                if (
+                  (this.options.ariaLive &&
+                    t.setAttribute("aria-live", this.options.ariaLive),
+                  this.options.node &&
+                    this.options.node.nodeType === Node.ELEMENT_NODE)
+                )
+                  t.appendChild(this.options.node);
+                else if (
+                  (this.options.escapeMarkup
+                    ? (t.innerText = this.options.text)
+                    : (t.innerHTML = this.options.text),
+                  "" !== this.options.avatar)
+                ) {
+                  var s = document.createElement("img");
+                  (s.src = this.options.avatar),
+                    (s.className = "toastify-avatar"),
+                    "left" == this.options.position ||
+                    !0 === this.options.positionLeft
+                      ? t.appendChild(s)
+                      : t.insertAdjacentElement("afterbegin", s);
+                }
+                if (!0 === this.options.close) {
+                  var e = document.createElement("button");
+                  (e.type = "button"),
+                    e.setAttribute("aria-label", "Close"),
+                    (e.className = "toast-close"),
+                    (e.innerHTML = "&#10006;"),
+                    e.addEventListener(
+                      "click",
+                      function (t) {
+                        t.stopPropagation(),
+                          this.removeElement(this.toastElement),
+                          window.clearTimeout(this.toastElement.timeOutValue);
+                      }.bind(this)
+                    );
+                  var n =
+                    window.innerWidth > 0 ? window.innerWidth : screen.width;
+                  ("left" == this.options.position ||
+                    !0 === this.options.positionLeft) &&
+                  n > 360
+                    ? t.insertAdjacentElement("afterbegin", e)
+                    : t.appendChild(e);
+                }
+                if (this.options.stopOnFocus && this.options.duration > 0) {
+                  var a = this;
+                  t.addEventListener("mouseover", function (o) {
+                    window.clearTimeout(t.timeOutValue);
+                  }),
+                    t.addEventListener("mouseleave", function () {
+                      t.timeOutValue = window.setTimeout(function () {
+                        a.removeElement(t);
+                      }, a.options.duration);
+                    });
+                }
+                if (
+                  (void 0 !== this.options.destination &&
+                    t.addEventListener(
+                      "click",
+                      function (t) {
+                        t.stopPropagation(),
+                          !0 === this.options.newWindow
+                            ? window.open(this.options.destination, "_blank")
+                            : (window.location = this.options.destination);
+                      }.bind(this)
+                    ),
+                  "function" == typeof this.options.onClick &&
+                    void 0 === this.options.destination &&
+                    t.addEventListener(
+                      "click",
+                      function (t) {
+                        t.stopPropagation(), this.options.onClick();
+                      }.bind(this)
+                    ),
+                  "object" == typeof this.options.offset)
+                ) {
+                  var l = i("x", this.options),
+                    r = i("y", this.options),
+                    p = "left" == this.options.position ? l : "-" + l,
+                    d = "toastify-top" == this.options.gravity ? r : "-" + r;
+                  t.style.transform = "translate(" + p + "," + d + ")";
+                }
+                return t;
+              },
+              showToast: function () {
+                var t;
+                if (
+                  ((this.toastElement = this.buildToast()),
+                  !(t =
+                    "string" == typeof this.options.selector
+                      ? document.getElementById(this.options.selector)
+                      : this.options.selector instanceof HTMLElement ||
+                        ("undefined" != typeof ShadowRoot &&
+                          this.options.selector instanceof ShadowRoot)
+                      ? this.options.selector
+                      : document.body))
+                )
+                  throw "Root element is not defined";
+                var i = o.defaults.oldestFirst ? t.firstChild : t.lastChild;
+                return (
+                  t.insertBefore(this.toastElement, i),
+                  o.reposition(),
+                  this.options.duration > 0 &&
+                    (this.toastElement.timeOutValue = window.setTimeout(
+                      function () {
+                        this.removeElement(this.toastElement);
+                      }.bind(this),
+                      this.options.duration
+                    )),
+                  this
+                );
+              },
+              hideToast: function () {
+                this.toastElement.timeOutValue &&
+                  clearTimeout(this.toastElement.timeOutValue),
+                  this.removeElement(this.toastElement);
+              },
+              removeElement: function (t) {
+                (t.className = t.className.replace(" on", "")),
+                  window.setTimeout(
+                    function () {
+                      this.options.node &&
+                        this.options.node.parentNode &&
+                        this.options.node.parentNode.removeChild(
+                          this.options.node
+                        ),
+                        t.parentNode && t.parentNode.removeChild(t),
+                        this.options.callback.call(t),
+                        o.reposition();
+                    }.bind(this),
+                    400
+                  );
+              },
+            }),
+          (o.reposition = function () {
+            for (
+              var t,
+                o = { top: 15, bottom: 15 },
+                i = { top: 15, bottom: 15 },
+                e = { top: 15, bottom: 15 },
+                n = document.getElementsByClassName("toastify"),
+                a = 0;
+              a < n.length;
+              a++
+            ) {
+              t =
+                !0 === s(n[a], "toastify-top")
+                  ? "toastify-top"
+                  : "toastify-bottom";
+              var l = n[a].offsetHeight;
+              t = t.substr(9, t.length - 1);
+              (window.innerWidth > 0 ? window.innerWidth : screen.width) <= 360
+                ? ((n[a].style[t] = e[t] + "px"), (e[t] += l + 15))
+                : !0 === s(n[a], "toastify-left")
+                ? ((n[a].style[t] = o[t] + "px"), (o[t] += l + 15))
+                : ((n[a].style[t] = i[t] + "px"), (i[t] += l + 15));
+            }
+            return this;
+          }),
+          (o.lib.init.prototype = o.lib),
+          o
+        );
+      });
+      //# sourceMappingURL=/sm/e1ebbfe1bf0b0061f0726ebc83434e1c2f8308e6354c415fd05ecccdaad47617.map
+    </script>
+  </body>
+</html>
